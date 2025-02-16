@@ -1,24 +1,28 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Player : MonoBehaviour
 {
     [SerializeField] 
-    private Transform orienation;
+    private Transform playerCamera;
+    [SerializeField]
+    private float moveSpeed = 5f;
+    [SerializeField]
+    private LayerMask layerMask;
 
     private Rigidbody rb;
-    public Vector2 inputDirection;
-    public float moveSpeed = 10f;
-    void Start()
+    private Vector2 inputDirection = Vector2.zero;
+    private Vector3 moveDirection = Vector3.zero;
+
+    void Awake()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
+        rb = GetComponent<Rigidbody>();  
     }
-    Vector3 moveDirection;
+
     void Update()
-    {
-        moveDirection = orienation.forward * inputDirection.y + orienation.right * inputDirection.x;
-        rb.linearDamping = 6f;
+    {      
+        moveDirection = Vector3.Cross(playerCamera.right, Vector3.up) * inputDirection.y 
+            + playerCamera.right * inputDirection.x;
     }
     void FixedUpdate()
     {
@@ -28,5 +32,19 @@ public class Player : MonoBehaviour
     public void Move(Vector2 direction)
     {
         inputDirection = direction;
+    }
+
+    public void Interact()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+        if (Physics.Raycast(ray, out hit, 20, layerMask))
+        {
+            hit.collider.gameObject.GetComponentInParent<Door>().OpenDoor();
+        }
+    }
+    public void Esc()
+    {
+        GameManager.RestartGame();
     }
 }

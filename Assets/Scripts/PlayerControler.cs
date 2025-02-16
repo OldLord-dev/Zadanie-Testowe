@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     private Player player;
-
+    public Neutralizer neutralizer;
     private void Awake()
     {
         player = GetComponent<Player>();
@@ -24,10 +24,28 @@ public class PlayerController : MonoBehaviour
         player.Move(input);
     }
 
-    //public void Interact(InputAction.CallbackContext context)
-    //{
-    //    if (!context.started)
-    //        return;
-    //    player.Interact();
-    //}
+    public void Interact(InputAction.CallbackContext context)
+    {
+        if (!context.started)
+            return;
+        player.Interact();
+    }
+    public void Scan(InputAction.CallbackContext context)
+    {
+        if (!context.started)
+            return;
+    }
+    public void Scrool(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+            return;
+        var input = context.ReadValue<float>();
+        neutralizer.Scrool(input);
+    }
+    public void Esc(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+            return;
+        player.Esc();
+    }
 }
